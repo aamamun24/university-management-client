@@ -14,15 +14,8 @@ const Login = () => {
 
   const dispatch = useAppDispatch();
 
-  // const { register, handleSubmit } = useForm({
-  //   defaultValues: {
-  //     userId: "A-0001",
-  //     password: "123456",
-  //   },
-  // });
-
   const defaultValues = {
-    userId: "A-0001",
+    userId: "2030020001",
     password: "123456",
   };
 
@@ -36,14 +29,18 @@ const Login = () => {
         id: data.userId,
         password: data.password,
       };
-
       const res = await login(userInfo).unwrap();
 
       const user = verifyToken(res.data.accessToken) as TUser;
 
       dispatch(setUser({ user: user, token: res.data.accessToken }));
-      navigate(`/${user.role}/dashboard`);
       toast.success("Login successful", { id: toastId, duration: 2000 });
+
+      if (res.data.needsPasswordChange) {
+        navigate(`/change-password`);
+      } else {
+        navigate(`/${user.role}/dashboard`);
+      }
     } catch (err) {
       toast.error("Login failed", { id: toastId, duration: 2000 });
     }
